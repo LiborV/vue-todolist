@@ -37,8 +37,8 @@ export default {
         // const router = useRouter()
         const store = useStore()
         const state = reactive({
-            userEmail: 'libor1@gmail.com',
-            userPassword: '123456'
+            userEmail: '',
+            userPassword: ''
         })
 
         const userLogin = async () => {
