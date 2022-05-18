@@ -48,20 +48,20 @@ const list = {
 
             let role = 'user'
             if (!state.userId) {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}/api/v1/auth/me`, config)
+                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/me`, config)
                 role = data.data.data.role
                 commit('SET_USER_ID', data.data.data._id)
             }
 
 
             if (role === 'admin') {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}/api/v1/items`, config)
+                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/items`, config)
 
                 commit('SET_PROTECT', data.data.success)
                 commit('SET_LIST', data.data.data)
             } else {
                 try {
-                    const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}/api/v1/users/${state.userId}/items`, config)
+                    const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/users/${state.userId}/items`, config)
 
                     commit('SET_PROTECT', data.data.success)
                     commit('SET_LIST', data.data.data)
@@ -78,7 +78,7 @@ const list = {
             }
 
             try {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}/api/v1/auth/me`, {
+                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/me`, {
                     headers: {
                         'Content-type': 'Application/json',
                         Authorization: `Bearer ${state.token}`
@@ -92,9 +92,10 @@ const list = {
         },
 
         async login({ commit }, bodyParameters) {
+            console.log(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/login`)
             try {
                 const res = await axios.post(
-                    `${process.env.VUE_APP_SERVICE_URL}/api/v1/auth/login`,
+                    `${process.env.VUE_APP_SERVICE_URL}api/v1/auth/login`,
                     bodyParameters
                 )
                 commit('SET_PROTECT', res.data.success)
@@ -118,12 +119,12 @@ const list = {
             }
 
             if (!state.userId) {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}/api/v1/auth/me`, config)
+                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/me`, config)
                 commit('SET_USER_ID', data.data.data._id)
             }
 
 
-            await axios.post(`${process.env.VUE_APP_SERVICE_URL}/api/v1/users/${state.userId}/items`,
+            await axios.post(`${process.env.VUE_APP_SERVICE_URL}api/v1/users/${state.userId}/items`,
                 bodyParameters,
                 config
             )
@@ -140,7 +141,7 @@ const list = {
                 }
             }
 
-            await axios.put(`${process.env.VUE_APP_SERVICE_URL}/api/v1/items/${data.itemId}`,
+            await axios.put(`${process.env.VUE_APP_SERVICE_URL}api/v1/items/${data.itemId}`,
                 data.data,
                 config
             )
@@ -156,7 +157,7 @@ const list = {
                     Authorization: `Bearer ${state.token}`
                 }
             }
-            await axios.delete(`${process.env.VUE_APP_SERVICE_URL}/api/v1/items/${itemId}`, config)
+            await axios.delete(`${process.env.VUE_APP_SERVICE_URL}api/v1/items/${itemId}`, config)
         },
 
         async logout({ state, commit }) {
@@ -170,7 +171,7 @@ const list = {
             }
 
             try {
-                await axios.get(`${process.env.VUE_APP_SERVICE_URL}/api/v1/auth/logout`, config)
+                await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/logout`, config)
                 commit('SET_USER_ID', '')
                 commit('SET_TOKEN', '')
                 commit('SET_PROTECT', false)

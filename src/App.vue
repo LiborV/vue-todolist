@@ -10,21 +10,21 @@
             >Home</router-link>
             |
             <router-link
-                to="/auth/me"
+                to="/me"
                 v-if="protect"
             >Get Me</router-link>
             |
             <router-link
-                to="/auth"
+                to="/login"
                 v-if="!protect"
             >Login</router-link>
             |
             <router-link
-                to="/auth/logout"
+                to="/logout"
                 v-if="protect"
             >Logout</router-link>
             |
-            <router-link to="/auth/registration">Registration</router-link>
+            <router-link to="/registration">Registration</router-link>
 
         </div>
         <router-view />

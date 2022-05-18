@@ -41,7 +41,7 @@
 <script>
 import { reactive, toRefs } from 'vue'
 import axios from 'axios'
-import { useStore } from "vuex";
+import { useStore } from 'vuex'
 export default {
     setup() {
         const store = useStore()
