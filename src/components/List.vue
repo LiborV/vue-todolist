@@ -1,20 +1,16 @@
 <template>
-    <div>
+    <div class="my-3" v-if="login">
         <AddItem />
-
         <div class="container">
             <div class="row">
-
                 <ListItem
                     v-for="(item, index) in list"
                     :key="index"
                     :item=item
                 >
                 </ListItem>
-
             </div>
         </div>
-
     </div>
 </template>
 
@@ -39,7 +35,8 @@ export default {
 
         return {
             ...toRefs(state),
-            list: computed(() => store.getters['list/getList'])
+            list: computed(() => store.getters['list/getList']),
+            login: computed(() => store.getters['getLogin'])
         }
     }
 }

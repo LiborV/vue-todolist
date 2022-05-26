@@ -1,54 +1,36 @@
 <template>
-    <div>
-
-        <div id="nav">
-            {{protect}}
-            |
-            <router-link
-                to="/"
-                v-if="protect"
-            >Home</router-link>
-            |
-            <router-link
-                to="/me"
-                v-if="protect"
-            >Get Me</router-link>
-            |
-            <router-link
-                to="/login"
-                v-if="!protect"
-            >Login</router-link>
-            |
-            <router-link
-                to="/logout"
-                v-if="protect"
-            >Logout</router-link>
-            |
-            <router-link to="/registration">Registration</router-link>
-
-        </div>
-        <router-view />
+    <div v-cloak>
+        <Alert />
+        <StatusLoggedIn v-if="login" v-cloak />
+        <StatusLoggedOut v-if="!login" v-cloak />
+        <router-view v-cloak />
     </div>
 </template>
 <script>
+import StatusLoggedIn from '@/views/StatusLoggedIn.vue'
+import StatusLoggedOut from '@/views/StatusLoggedOut.vue'
+import Alert from '@/components/message/Alert.vue'
+
 import { reactive, toRefs, computed } from 'vue'
 import { useStore } from 'vuex'
 export default {
+    components: {
+        StatusLoggedIn,
+        StatusLoggedOut,
+        Alert
+    },
     setup() {
         const store = useStore()
         const state = reactive({
-            count: 0
+            login: computed(() => store.getters['getLogin'])
         })
 
         return {
-            ...toRefs(state),
-            protect: computed(() => store.getters['list/getProtect'])
+            ...toRefs(state)
         }
     }
 }
 </script>
-
-
 
 <style lang="scss">
 @use '@/scss/style.scss';
@@ -72,5 +54,9 @@ export default {
             color: #42b983;
         }
     }
+}
+
+[v-cloak] {
+    display: none;
 }
 </style>

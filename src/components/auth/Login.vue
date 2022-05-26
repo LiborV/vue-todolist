@@ -1,30 +1,25 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <form
-                    action="/"
-                    @submit.prevent="userLogin"
-                >
-                    <div class="input-group">
-                        <input
-                            type="text"
-                            aria-label="item"
-                            class="form-control"
-                            v-model="userEmail"
-                        >
-                        <input
-                            type="password"
-                            aria-label="priority"
-                            class="form-control"
-                            v-model="userPassword"
-                        >
-                        <button class="input-group-text btn btn-success">login</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <form
+        action="/"
+        @submit.prevent="userLogin"
+    >
+        <input
+            type="text"
+            aria-label="item"
+            class="form-control my-3"
+            placeholder="User Email"
+            v-model="userEmail"
+        >
+        <input
+            type="password"
+            aria-label="priority"
+            class="form-control my-3"
+            placeholder="User Password"
+            v-model="userPassword"
+        >
+        <button class="input-group-text btn btn-success w-100">Login</button>
+
+    </form>
 </template>
 
 <script>
@@ -47,12 +42,8 @@ export default {
                 password: state.userPassword
             }
 
-            try {
-                store.dispatch('list/login', bodyParameters)
-                // router.replace({ name: 'Home' })
-            } catch (error) {
-                console.log(error)
-            }
+            store.dispatch('auth/login', bodyParameters)
+            // router.replace({ name: 'Home' })
         }
         return {
             ...toRefs(state),

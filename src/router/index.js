@@ -1,37 +1,35 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Login from '../components/auth/Login.vue'
+import List from '../components/List.vue'
 import Registration from '../components/auth/Registration.vue'
-import Me from '../components/auth/Me.vue'
-import Logout from '../components/auth/Logout.vue'
-
+import UpdatePassword from '../components/auth/UpdatePassword.vue'
+import Forgotpassword from '../components/auth/ForgotPassword.vue'
+import ResetPassword from '../components/auth/ResetPassword.vue'
 
 const routes = [
     {
         path: '/',
         name: 'Home',
-        component: Home
-    },
-    {
-        path: '/login',
-        name: 'Login',
-        component:Login
+        component: List
     },
     {
         path: '/registration',
         name: 'Registration',
         component: Registration
-    }
-    ,
-    {
-        path: '/me',
-        name: 'Me',
-        component: Me
     },
     {
-        path: '/logout',
-        name: 'Logout',
-        component: Logout
+        path: '/updatepassword',
+        name: 'UpdatePassword',
+        component: UpdatePassword
+    },
+    {
+        path: '/forgotpassword',
+        name: 'Forgotpassword',
+        component: Forgotpassword
+    },
+    {
+        path: '/resetpassword',
+        name: 'ResetPassword',
+        component: ResetPassword
     }
 ]
 

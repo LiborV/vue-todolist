@@ -45,8 +45,6 @@ export default {
                 title: state.itemTitle,
                 priority: state.itemPriority
             })
-
-            store.dispatch('list/getItems')
         }
         return {
             ...toRefs(state),

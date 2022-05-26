@@ -1,185 +1,24 @@
+/* eslint "no-unused-vars": "off" */
+
 import { createStore } from 'vuex'
 import axios from 'axios'
+import router from '../router/index.js'
+// import router from 'vue-router'
 
-const list = {
+
+const ListModule = {
     namespaced: true,
     state: {
         list: [],
-        protect: false,
-        token: '',
-        userId: '',
-        user: ''
+        editing: false
     },
     mutations: {
         SET_LIST(state, data) {
             state.list = data
         },
 
-        SET_PROTECT(state, data) {
-            state.protect = data
-        },
-
-        SET_TOKEN(state, data) {
-            state.token = data
-        },
-
-        SET_USER_ID(state, data) {
-            state.userId = data
-        },
-
-        SET_USER(state, data) {
-            state.user = data
-        }
-
-    },
-    actions: {
-        // https://blog.logrocket.com/consume-apis-with-vuex-pinia-axios/
-        async getItems({ state, commit }) {
-            if (!state.token) {
-                commit('SET_TOKEN', document.cookie.split('=')[1])
-            }
-
-            const config = {
-                headers: {
-                    "Content-type": "Application/json",
-                    Authorization: `Bearer ${state.token}`
-                }
-            }
-
-            let role = 'user'
-            if (!state.userId) {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/me`, config)
-                role = data.data.data.role
-                commit('SET_USER_ID', data.data.data._id)
-            }
-
-
-            if (role === 'admin') {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/items`, config)
-
-                commit('SET_PROTECT', data.data.success)
-                commit('SET_LIST', data.data.data)
-            } else {
-                try {
-                    const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/users/${state.userId}/items`, config)
-
-                    commit('SET_PROTECT', data.data.success)
-                    commit('SET_LIST', data.data.data)
-                }
-                catch (error) {
-                    console.log(error)
-                }
-            }
-        },
-
-        async getMe({ state, commit }) {
-            if (!state.token) {
-                commit('SET_TOKEN', document.cookie.split('=')[1])
-            }
-
-            try {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/me`, {
-                    headers: {
-                        'Content-type': 'Application/json',
-                        Authorization: `Bearer ${state.token}`
-                    }
-                })
-                commit('SET_PROTECT', data.data.success)
-                commit('SET_USER', data.data)
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        async login({ commit }, bodyParameters) {
-            console.log(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/login`)
-            try {
-                const res = await axios.post(
-                    `${process.env.VUE_APP_SERVICE_URL}api/v1/auth/login`,
-                    bodyParameters
-                )
-                commit('SET_PROTECT', res.data.success)
-                commit('SET_TOKEN', res.data.data)
-
-            } catch (error) {
-                console.log(error)
-            }
-        },
-
-        async addItem({ state, commit }, bodyParameters) {
-            if (!state.token) {
-                commit('SET_TOKEN', document.cookie.split('=')[1])
-            }
-
-            const config = {
-                headers: {
-                    "Content-type": "Application/json",
-                    Authorization: `Bearer ${state.token}`
-                }
-            }
-
-            if (!state.userId) {
-                const data = await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/me`, config)
-                commit('SET_USER_ID', data.data.data._id)
-            }
-
-
-            await axios.post(`${process.env.VUE_APP_SERVICE_URL}api/v1/users/${state.userId}/items`,
-                bodyParameters,
-                config
-            )
-        },
-
-        async editItem({ state, commit }, data) {
-            if (!state.token) {
-                commit('SET_TOKEN', document.cookie.split('=')[1])
-            }
-            const config = {
-                headers: {
-                    "Content-type": "Application/json",
-                    Authorization: `Bearer ${state.token}`
-                }
-            }
-
-            await axios.put(`${process.env.VUE_APP_SERVICE_URL}api/v1/items/${data.itemId}`,
-                data.data,
-                config
-            )
-        },
-
-        async deleteItem({ state, commit }, itemId) {
-            if (!state.token) {
-                commit('SET_TOKEN', document.cookie.split('=')[1])
-            }
-            const config = {
-                headers: {
-                    "Content-type": "Application/json",
-                    Authorization: `Bearer ${state.token}`
-                }
-            }
-            await axios.delete(`${process.env.VUE_APP_SERVICE_URL}api/v1/items/${itemId}`, config)
-        },
-
-        async logout({ state, commit }) {
-            if (!state.token) {
-                commit('SET_TOKEN', document.cookie.split('=')[1])
-            }
-            const config = {
-                headers: {
-                    Authorization: `Bearer ${state.token}`
-                }
-            }
-
-            try {
-                await axios.get(`${process.env.VUE_APP_SERVICE_URL}api/v1/auth/logout`, config)
-                commit('SET_USER_ID', '')
-                commit('SET_TOKEN', '')
-                commit('SET_PROTECT', false)
-                commit('SET_USER', '')
-            } catch (error) {
-                console.log(error)
-            }
-
+        SET_EDITING(state, data) {
+            state.editing = data
         }
     },
     getters: {
@@ -187,53 +26,190 @@ const list = {
             return state.list
         },
 
-        getProtect(state) {
-            return state.protect
+        getEditing(state) {
+            return state.editing
+        },
+    },
+    actions: {
+        // https://blog.logrocket.com/consume-apis-with-vuex-pinia-axios/
+        async getItems({ commit, rootState, dispatch }) {
+            await dispatch('auth/getMe', '', { root: true })
+            const user = rootState.user.data
+
+            if (user.role === 'admin') {
+                const allItems = await axios.get(`items`)
+                commit('SET_LIST', allItems.data.data)
+            } else {
+                const userItems = await axios.get(`users/${user._id}/items`)
+                commit('SET_LIST', userItems.data.data)
+            }
         },
 
-        getToken(state) {
-            return state.token
+        async editItem({ commit, dispatch }, data) {
+            try {
+                await axios.put(`items/${data.itemId}`, data.data)
+                commit('SET_MESSAGE', '', { root: true })
+                commit('SET_MESSAGE_CLASS', '', { root: true })
+                commit('SET_EDITING', false)
+            } catch (error) {
+                console.log(error)
+                commit('SET_MESSAGE', error.response.data.error, { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+                commit('SET_EDITING', true)
+            }
+            dispatch('getItems')
         },
 
+        async addItem({ commit, dispatch }, bodyParameters) {
+            try {
+                const getMe = await axios.get('auth/me')
+                await axios.post(`users/${getMe.data.data._id}/items`, bodyParameters,)
+                dispatch('getItems')
+            } catch (error) {
+                console.log(error)
+                commit('SET_MESSAGE', error.response.data.error, { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+            }
+
+        },
+
+        async deleteItem({ commit }, itemId) {
+            try {
+                await axios.delete(`items/${itemId}`)
+            } catch (error) {
+                console.log(error)
+            }
+        },
+    }
+}
+
+const AuthModule = {
+    namespaced: true,
+    actions: {
+        async getMe({ commit }) {
+            try {
+                const getMe = await axios.get('auth/me')
+                commit('SET_USER', getMe.data, { root: true })
+                commit('SET_LOGIN', true, { root: true })
+            } catch (error) {
+                console.log(error)
+                commit('SET_MESSAGE', error.response.data.error, { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+            }
+        },
+
+        async login({ commit, dispatch }, bodyParameters) {
+            try {
+                await axios.post('auth/login', bodyParameters)
+                commit('SET_MESSAGE', '', { root: true })
+                commit('SET_MESSAGE_CLASS', '', { root: true })
+                dispatch('list/getItems', '', { root: true })
+                commit('SET_LOGIN', true, { root: true })
+                router.replace({ name: 'Home' })
+            } catch (error) {
+                commit('SET_MESSAGE', 'Invalid credentials', { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+                console.log(error)
+            }
+        },
+
+        async logout({ commit }) {
+            try {
+                await axios.get(`auth/logout`)
+                commit('SET_USER', '', { root: true })
+                commit('list/SET_LIST', '', { root: true })
+                commit('SET_LOGIN', false, { root: true })
+            } catch (error) {
+                console.log(error)
+            }
+        },
+
+        async registration({ commit }, bodyParameters) {
+            try {
+                await axios.post(`auth/register`, bodyParameters)
+            } catch (error) {
+                console.log(error)
+                commit('SET_MESSAGE', error.response.data.error, { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+            }
+        },
+
+        async updatePassword({ commit }, bodyParameters) {
+            try {
+                await axios.put(`auth/updatepassword`, bodyParameters)
+            } catch (error) {
+                console.log(error)
+                commit('SET_MESSAGE', error.response.data.error, { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+            }
+        },
+
+        async forgotPassword({ commit }, email) {
+            try {
+                await axios.post(`auth/forgotpassword`, { email })
+            } catch (error) {
+                console.log(error)
+                commit('SET_MESSAGE', error.response.data.error, { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+            }
+        },
+
+        async resetPassword({ commit }, bodyParameters) {
+            const { password, token } = bodyParameters
+            try {
+                await axios.put(`auth/resetpassword/${token}`, { password })
+            } catch (error) {
+                console.log(error)
+                commit('SET_MESSAGE', error.response.data.error, { root: true })
+                commit('SET_MESSAGE_CLASS', 'alert alert-danger', { root: true })
+            }
+        }
+    }
+}
+
+export default createStore({
+    modules: {
+        list: ListModule,
+        auth: AuthModule,
+    },
+    state: {
+        user: '',
+        message: '',
+        messageClass: '',
+        login: false
+    },
+    mutations: {
+        SET_USER(state, data) {
+            state.user = data
+        },
+
+        SET_MESSAGE(state, data) {
+            state.message = data
+        },
+
+        SET_MESSAGE_CLASS(state, data) {
+            state.messageClass = data
+        },
+
+        SET_LOGIN(state, data) {
+            state.login = data
+        }
+    },
+    getters: {
         getUser(state) {
             return state.user
         },
 
-        getConfigToken(state) {
-            return {
-                headers: {
-                    'Content-type': 'Application/json',
-                    Authorization: `Bearer ${state.token}`
-                }
-            }
+        getMessage(state) {
+            return state.message
+        },
+
+        getMessageClass(state) {
+            return state.messageClass
+        },
+
+        getLogin(state) {
+            return state.login
         }
-    }
-
-}
-
-// const a = {
-//     state: {
-//         users: []
-//     },
-//     getters: {
-//         getUsers: (state) => state.users
-//     },
-
-//     mutations: {
-//         SET_LIST(state, users) {
-//             state.users = users
-//         }
-//     }
-// })
-
-
-
-export default createStore({
-    modules: {
-        list
-    }
+    },
 })
-
-
-// set token
-// https://github.com/codyseibert/tab-tracker/blob/master/client/src/store/store.js

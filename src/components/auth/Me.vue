@@ -1,13 +1,9 @@
 <template>
-    <div class="container">
-
-        <div class="row">
-            <div class="col">
-                {{me}}
-            </div>
-        </div>
+    <div
+        class="border px-3"
+        v-if="me">
+        {{me.data.name}} | {{me.data.email}} | {{me.data.role}}
     </div>
-
 </template>
 
 <script>
@@ -16,16 +12,15 @@ import { useStore } from 'vuex'
 export default {
     setup() {
         const store = useStore()
-        const state = reactive({
-        })
+        const state = reactive({})
 
         onMounted(async () => {
-            store.dispatch('list/getMe')
+            store.dispatch('auth/getMe')
         })
 
         return {
             ...toRefs(state),
-            me: computed(() => store.getters['list/getUser'])
+            me: computed(() => store.getters['getUser'])
         }
     }
 }

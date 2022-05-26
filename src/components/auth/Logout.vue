@@ -21,7 +21,7 @@ export default {
         const state = reactive({})
 
         const userLogout = async () => {
-            store.dispatch('list/logout')
+            store.dispatch('auth/logout')
         }
 
         return {
