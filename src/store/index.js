@@ -119,6 +119,7 @@ const AuthModule = {
                 commit('SET_USER', '', { root: true })
                 commit('list/SET_LIST', '', { root: true })
                 commit('SET_LOGIN', false, { root: true })
+                router.replace({ name: 'Home' })
             } catch (error) {
                 console.log(error)
             }
