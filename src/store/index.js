@@ -128,6 +128,7 @@ const AuthModule = {
         async registration({ commit }, bodyParameters) {
             try {
                 await axios.post(`auth/register`, bodyParameters)
+                router.replace({ name: 'Home' })
             } catch (error) {
                 console.log(error)
                 commit('SET_MESSAGE', error.response.data.error, { root: true })
@@ -159,6 +160,7 @@ const AuthModule = {
             const { password, token } = bodyParameters
             try {
                 await axios.put(`auth/resetpassword/${token}`, { password })
+                router.replace({ name: 'Home' })
             } catch (error) {
                 console.log(error)
                 commit('SET_MESSAGE', error.response.data.error, { root: true })

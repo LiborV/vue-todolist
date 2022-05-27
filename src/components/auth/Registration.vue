@@ -21,8 +21,7 @@
                             v-model="email"
                         >
                         <input
-                            type="
-                            password"
+                            type="password"
                             aria-label="priority"
                             class="form-control my-3"
                             placeholder="password"
